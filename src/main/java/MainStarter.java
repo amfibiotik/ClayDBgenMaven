@@ -8,18 +8,15 @@ import java.util.ArrayList;
 
 
 public class MainStarter {
+    private final static String SPLITTER = "\r\n\r\n";
+    private final static String URL = "jdbc:sqlite:";
 
-    final static String URL = "jdbc:sqlite:";
-
-    static String absPath = new File (".").getAbsolutePath().replace ('\\','/' );
+    private static String absPath = new File (".").getAbsolutePath().replace ('\\','/' ); //get path to program folder
 
 
 
-    public static void createNewDatabase(String fileName) {
-
-        String url = URL;
-        url +=  absPath.substring (0, absPath.length () - 1);
-        url += fileName;
+    private static void createNewDatabase(String fileName) {
+        String url = URL + absPath.substring (0, absPath.length () - 1) + fileName; //URL + absPath without '.' + fileName
 
         try {
             Connection conn = DriverManager.getConnection(url);
@@ -34,26 +31,30 @@ public class MainStarter {
     }
 
     public static void main (String[] args) {
-        TextFromFileSearcher t = new TextFromFileSearcher(); //read all parameters from default Claymore readme file (in constructor)
-        String s = TextFromFileSearcher.getSearchResult (); //take only middle part
-        char[] ch = s.toCharArray ();                           // Split whole text to parts with one parameter in each other...
-        String split = Character.toString (ch[0]) + Character.toString (ch[1]);
-        String[] strs = s.split (split + split);
+        //read all parameters from default Claymore readme file (in constructor)
+        TextFromFileSearcher t = new TextFromFileSearcher();
 
-        ArrayList<ParameterString> list = new ArrayList<> (); //...and save all those texts with parameters in ArrayList
+        //take only middle part
+        String s = t.getSearchResult ();
+
+        // Split whole text to parts with one parameter in each other...
+        String[] strs = s.split (SPLITTER);
+
+        //save all those texts with parameters in ArrayList
+        ArrayList<ParameterString> list = new ArrayList<> ();
         for (String oneStr : strs){
             list.add (new ParameterString (oneStr));
         }
 
         String fileName = "test.db";
-        File f = new File (URL + absPath.substring (0, absPath.length () - 1) + fileName);
+        File f = new File (absPath.substring (0, absPath.length () - 1) + fileName);
         if (!f.exists ()) {
             System.out.println ("Creating new DB...");
             createNewDatabase (fileName);
         }
 
 
-//TODO Постійно "створює" нову базу, хоч файл існує. Перевірити шлях повний генеруємий.
+
 
 
 
